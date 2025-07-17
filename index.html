@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- SEO метатеги -->
+    <title>Онлайн калькулятор — быстрые расчёты в браузере</title>
+    <meta name="description" content="Онлайн калькулятор для быстрых математических вычислений. Поддержка истории, работа с клавиатуры, адаптивный дизайн.">
+    <meta name="keywords" content="калькулятор, онлайн, математика, вычисления, быстро">
+    <meta name="author" content="Calculator App">
+    
+    <!-- Open Graph метатеги -->
+    <meta property="og:title" content="Онлайн Калькулятор">
+    <meta property="og:description" content="Быстрые математические вычисления в браузере">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://kalkulyator-1.onrender.com">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Онлайн Калькулятор">
+    <meta name="twitter:description" content="Быстрые математические вычисления в браузере">
+    
+    <!-- PWA метатеги -->
+    <meta name="theme-color" content="#667eea">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Калькулятор">
+    
+    <!-- Иконки -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔢</text></svg>">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔢</text></svg>">
+    
+    <!-- PWA манифест -->
+    <link rel="manifest" href="/manifest.json">
+    
+    <!-- Стили -->
+    <link rel="stylesheet" href="styles.css">
+    
+    <!-- Дополнительные навигационные ссылки -->
+    <style>
+        .nav-links {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 1000;
+        }
+        
+        .nav-link {
+            background: rgba(255, 255, 255, 0.9);
+            color: #667eea;
+            padding: 8px 12px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s;
+        }
+        
+        .nav-link:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        @media (max-width: 480px) {
+            .nav-links {
+                bottom: 10px;
+                left: 10px;
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="calculator">
+            <div class="display">
+                <div class="expression" id="expression"></div>
+                <div class="result" id="result">0</div>
+            </div>
+            
+            <div class="buttons">
+                <button class="clear" onclick="clearAll()">C</button>
+                <button class="clear" onclick="clearEntry()">CE</button>
+                <button class="operator" onclick="appendOperator('/')" aria-label="Деление">÷</button>
+                <button class="operator" onclick="appendOperator('*')" aria-label="Умножение">×</button>
+                
+                <button class="number" onclick="appendNumber('7')">7</button>
+                <button class="number" onclick="appendNumber('8')">8</button>
+                <button class="number" onclick="appendNumber('9')">9</button>
+                <button class="operator" onclick="appendOperator('-')" aria-label="Вычитание">−</button>
+                
+                <button class="number" onclick="appendNumber('4')">4</button>
+                <button class="number" onclick="appendNumber('5')">5</button>
+                <button class="number" onclick="appendNumber('6')">6</button>
+                <button class="operator" onclick="appendOperator('+')" aria-label="Сложение">+</button>
+                
+                <button class="number" onclick="appendNumber('1')">1</button>
+                <button class="number" onclick="appendNumber('2')">2</button>
+                <button class="number" onclick="appendNumber('3')">3</button>
+                <button class="equals" onclick="calculate()" rowspan="2" aria-label="Равно">=</button>
+                
+                <button class="number" onclick="appendNumber('0')" style="grid-column: span 2;">0</button>
+                <button class="number" onclick="appendNumber('.')">.</button>
+                
+                <button class="copy" onclick="copyResult()" style="grid-column: span 4;">📋 Копировать результат</button>
+            </div>
+            
+            <div class="help-text">
+                <strong>Подсказки:</strong><br>
+                • Используйте клавиатуру для ввода чисел и операторов<br>
+                • Enter или = для вычисления<br>
+                • Backspace для удаления последнего символа<br>
+                • Escape для полной очистки
+            </div>
+        </div>
+        
+        <div class="history-panel">
+            <div class="history-header">
+                <div class="history-title">История вычислений</div>
+                <button class="clear-history" onclick="clearHistory()">Очистить</button>
+            </div>
+            <div id="history-list">
+                <div style="text-align: center; color: #6c757d; padding: 20px;">
+                    История пуста
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Навигационные ссылки -->
+    <div class="nav-links">
+        <a href="help.html" class="nav-link">Справка</a>
+        <a href="privacy.html" class="nav-link">Конфиденциальность</a>
+    </div>
+
+    <!-- Toast уведомления -->
+    <div class="toast" id="toast"></div>
+
+    <!-- Подключение JavaScript -->
+    <script src="script.js"></script>
+    
+    <!-- Структурированные данные для поисковых систем -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Онлайн Калькулятор",
+        "description": "Быстрый и удобный онлайн калькулятор для математических вычислений",
+        "url": "https://kalkulyator-1.onrender.com",
+        "applicationCategory": "Utility",
+        "operatingSystem": "Web Browser",
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "RUB"
+        }
+    }
+    </script>
+</body>
+</html> 
